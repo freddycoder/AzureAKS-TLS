@@ -3,10 +3,14 @@ param(
     [string] $location = "eastus",
     [string] $aksClusterName = "kerabliere",
     [string] $namespace = "ingress-basic",
-    [string] $dnsLabel = "erabliereapidemo1"
+    [string] $dnsLabel = "erabliereapidemo1",
+    [string] $appScriptPath = ".\demo\application-deployment.ps1"
 )
 
 $ErrorActionPreference = "Stop"
+
+# Variable global a utiliser lors de la sauvegarde
+$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
 
 Write-Output "Azure AKS Cluster deployment"
 Write-Output ""
@@ -18,7 +22,7 @@ Write-Output ""
 
 az --version
 
-Write-Output "Make sure you run have a version greater than 2.0.53"
+Write-Output "Make sure you run have a version of 'az' greater than 2.0.53"
 
 Write-Output "Do you want to procced ? (y/n)"
 
@@ -28,6 +32,11 @@ if ($userConfirm.Trim().ToLower() -eq 'n') {
     Write-Output "Operation canceled"
     exit 0
 }
+
+Write-Output "To correclty configure the cluster-isser, you need to enter an valid email address."
+Write-Output "Email : "
+
+$emailAddress = Read-Host
 
 Write-Output "Login to azure"
 
@@ -153,6 +162,51 @@ helm repo update
 Write-Output "Install the cert-manager Helm chart"
 helm install cert-manager --namespace $namespace --version v1.3.1 --set installCRDs=true --set nodeSelector."beta\.kubernetes\.io/os"=linux jetstack/cert-manager
 
-Write-Output "Create the cluster issuer"
-kubectl apply -f cluster-issuer.yaml --namespace $namespace
+Write-Output "Wait two minutes before creating the cluster-issuer... this will prevent a request timeout to the cert-manager"
+Start-Sleep 120
 
+Write-Output "Create the cluster issuer"
+
+Write-Output "Create the yaml using email address :" $emailAddress
+$templatePath = $PWD.Path + "\template\" + "cluster-issuer.yaml";
+$templateClusterIssuer = Get-Content -Path $templatePath -Encoding UTF8 -Raw
+$templateClusterIssuer = $templateClusterIssuer.Replace("<your-email-address>", $emailAddress);
+Write-Output "Save the yaml"
+[System.IO.Directory]::CreateDirectory($PWD.Path + "\generated\")
+[System.IO.File]::WriteAllText($PWD.Path + "\generated\" + "cluster-issuer.yaml", $templateClusterIssuer, $Utf8NoBomEncoding);
+
+Write-Host "Apply yaml"
+kubectl apply -f generated/cluster-issuer.yaml --namespace $namespace
+
+Write-Output "Now deploying your application"
+
+& $appScriptPath $namespace $dnsLabel $location
+
+Write-Output "Create a certificat object"
+
+Write-Output "First look at the output to see if you need to create additional certificate"
+
+kubectl describe certificate tls-secret --namespace $namespace
+
+Write-Output "Do you need to create additionnal certificate ? (y/n)"
+
+$userConfirm = Read-Host
+
+if ($userConfirm.Trim().ToLower() -eq "y") {
+    Write-Output "Create the yaml"
+    $templatePath = $PWD.Path + "\template\" + "certificates.yaml";
+    $ingressRouteYaml = Get-Content -Path $templatePath -Encoding UTF8 -Raw
+    $ingressRouteYaml = $ingressRouteYaml.Replace("<your-domain-prefix>", $dnsLabel);
+    $ingressRouteYaml = $ingressRouteYaml.Replace("<your-location>", $location);
+    Write-Output "saving the yaml"
+    [System.IO.File]::WriteAllText($PWD.Path + "\generated\" + "certificates.yaml", $ingressRouteYaml, $Utf8NoBomEncoding)
+    Write-Output "apply the yaml"
+
+    kubectl apply -f generated/certificates.yaml
+}
+
+Write-Output "You are all set ! You can now visit your site !"
+$site1Url = "https://" + $dnsLabel + "." + $location + ".cloudapp.azure.com"
+$site2Url = "https://" + $dnsLabel + "." + $location + ".cloudapp.azure.com/hello-world-two"
+Write-Output "Url1:" $site1Url
+Write-Output "Url2:" $site2Url
