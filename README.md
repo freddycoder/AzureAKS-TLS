@@ -1,26 +1,35 @@
 # AzureAKS-TLS
 A repo with scripts to deploy a AKS cluster with ingress using TLS with auto cert renew.
 
-## Work in progress.
+## Run the script
 
-Right now the script deploy the cluster, setup static IP, and create the ingress controller. 
+Before running the script, I suggest you check the parameters and changes values those you want.
 
-## TODO
+With a powershell console place inside this repo. Execute 
 
-- Create cluster-issuer
-- Create cert-issuer
-- Deploy the app
-- Validate auto-renew is working
+```
+.\azure-aks-cluster-deployment.ps1
+```
 
-### Run the script
+You will be ask a few questions along the process and the execution will take something like 4 minutes.
 
-1. Change the email in the cluster-issuer.yaml for one of yours
-2. Run the script ```azure-aks-cluster-deployment.ps1``` as administrator
+Once your done. You can cleanup resource created be the script.
 
-To cleanup the resrouce, you can run ```cleanup-resource.ps1```.
+```
+.\cleanup-resources.ps1
+```
+
+The AKS Cluster and the resource group are not automaticly deleted. You will need to delete them manually if you don't want to keep them. 
+
+### What to do if there is an error
+
+If for some reson there is an error in the execution of the script cause by extarnal factor. After fixing the issue, you can restart the script and neccessary check 
+are going to be verify the not duplicate or create other new resource.
 
 ### Dependancies
 
 Chocolaty
 Kubectl
 Azure Cli
+Powershell
+Windows
