@@ -15,7 +15,7 @@ Right now the script deploy the cluster, setup static IP, and create the ingress
 ### Run the script
 
 1. Change the email in the cluster-issuer.yaml for one of yours
-2. Run the script as administrator
+2. Run the script ```azure-aks-cluster-deployment.ps1``` as administrator
 
 To cleanup the resrouce, you can run ```cleanup-resource.ps1```.
 
