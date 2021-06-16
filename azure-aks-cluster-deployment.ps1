@@ -105,8 +105,13 @@ if ($ipExist -eq $false) {
 
 kubectl create namespace $namespace
 
-Write-Output "Install kubernetes-helm"
-choco install kubernetes-helm
+try {
+    Write-Output "Install kubernetes-helm"
+    choco install kubernetes-helm
+} catch {
+    Write-Output "Choco install kebernetes-helm failed... you may need to install helm manually"
+}
+
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 
