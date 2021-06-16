@@ -158,8 +158,8 @@ helm repo update
 Write-Output "Install the cert-manager Helm chart"
 helm install cert-manager --namespace $namespace --version v1.3.1 --set installCRDs=true --set nodeSelector."beta\.kubernetes\.io/os"=linux jetstack/cert-manager
 
-Write-Output "Wait a minute before creating the cluster-issuer... this will prevent a request timeout to the cert-manager"
-Start-Sleep 60
+Write-Output "Wait two minutes before creating the cluster-issuer... this will prevent a request timeout to the cert-manager"
+Start-Sleep 120
 
 Write-Output "Create the cluster issuer"
 kubectl apply -f cluster-issuer.yaml --namespace $namespace
