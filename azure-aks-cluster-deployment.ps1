@@ -96,7 +96,7 @@ foreach ($ipEntity in $ipList) {
 if ($ipExist -eq $false) {
     $ipInfo = az network public-ip create --resource-group $ipResourceGroup --name $ipName --sku Standard --allocation-method static --query publicIp.ipAddress -o tsv
 
-    $staticIP = $ipInfo.Slipt("\n")[1];
+    $staticIP = $ipInfo.Split("\n")[1];
 } else {
     Write-Output "Skipping static public IP address. IP $ipName already exist"
 
