@@ -23,13 +23,13 @@ The AKS Cluster and the resource group are not automaticly deleted. You will nee
 
 ### What to do if there is an error
 
-If for some reson there is an error in the execution of the script cause by extarnal factor. After fixing the issue, you can restart the script and neccessary check 
+If for some reson there is an error during the execution of the script cause by extarnal factor. After fixing the issue, you can restart the script and neccessary check 
 are going to be verify the not duplicate or create other new resource.
 
 ### Dependancies
 
-Chocolaty
-Kubectl
-Azure Cli
-Powershell
-Windows
+- Chocolaty
+- Kubectl
+- Azure Cli
+- Powershell
+- Windows
