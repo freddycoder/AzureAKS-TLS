@@ -9,11 +9,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-kubectl delete -f cluster-issuer.yaml
+kubectl delete -f cluster-issuer.yaml -n $namespace
 
 helm list --all-namespaces
 
 helm uninstall nginx-ingress cert-manager -n $namespace
+
+kubectl delete -f aks-helloworld.yaml -n $namespace
+kubectl delete -f ingress-demo.yaml -n $namespace
 
 kubectl delete namespace $namespace
 

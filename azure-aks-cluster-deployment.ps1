@@ -3,7 +3,8 @@ param(
     [string] $location = "eastus",
     [string] $aksClusterName = "kerabliere",
     [string] $namespace = "ingress-basic",
-    [string] $dnsLabel = "erabliereapidemo1"
+    [string] $dnsLabel = "erabliereapidemo1",
+    [string] $appScriptPath = "./application-deployment.ps1"
 )
 
 $ErrorActionPreference = "Stop"
@@ -16,9 +17,13 @@ Write-Output "Create AKS Cluster      : https://docs.microsoft.com/en-us/azure/a
 Write-Output "Setup TLS Ready Ingress : https://docs.microsoft.com/en-us/azure/aks/ingress-static-ip"
 Write-Output ""
 
+Write-Output "Make sure you setup the email address in the cluster-issuer.yaml file. Press enter if you have done it"
+
+$userConfirm = Read-Host
+
 az --version
 
-Write-Output "Make sure you run have a version greater than 2.0.53"
+Write-Output "Make sure you run have a version of 'az' greater than 2.0.53"
 
 Write-Output "Do you want to procced ? (y/n)"
 
@@ -153,6 +158,28 @@ helm repo update
 Write-Output "Install the cert-manager Helm chart"
 helm install cert-manager --namespace $namespace --version v1.3.1 --set installCRDs=true --set nodeSelector."beta\.kubernetes\.io/os"=linux jetstack/cert-manager
 
+Write-Output "Wait a minute before creating the cluster-issuer... this will prevent a request timeout to the cert-manager"
+Start-Sleep 60
+
 Write-Output "Create the cluster issuer"
 kubectl apply -f cluster-issuer.yaml --namespace $namespace
 
+Write-Output "Now deploying your application"
+
+& $appScriptPath $namespace
+
+Write-Output "Create a certificat object"
+
+Write-Output "First look at the output to see if you need to create additional certificate"
+
+kubectl describe certificate tls-secret --namespace $namespace
+
+Write-Output "Do you need to create additionnal certificate ? (y/n)"
+
+$userConfirm = Read-Host
+
+if ($userConfirm.Trim().ToLower() -eq "y") {
+    kubectl apply -f certificates.yaml
+}
+
+Write-Output "You are all set ! You can now visit your site !"
