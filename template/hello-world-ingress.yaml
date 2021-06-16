@@ -10,10 +10,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - demo-aks-ingress.eastus.cloudapp.azure.com
+    - <your-domain-prefix>.<your-location>.cloudapp.azure.com
     secretName: tls-secret
   rules:
-  - host: demo-aks-ingress.eastus.cloudapp.azure.com
+  - host: <your-domain-prefix>.<your-location>.cloudapp.azure.com
     http:
       paths:
       - path: /hello-world-one(/|$)(.*)
