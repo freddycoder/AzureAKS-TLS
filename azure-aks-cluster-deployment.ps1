@@ -175,7 +175,7 @@ Write-Output "Save the yaml"
 [System.IO.Directory]::CreateDirectory($PWD.Path + "\generated\")
 [System.IO.File]::WriteAllText($PWD.Path + "\generated\" + "cluster-issuer.yaml", $templateClusterIssuer, $Utf8NoBomEncoding);
 
-Write-Host "Apply yaml"
+Write-Output "Apply yaml"
 kubectl apply -f generated/cluster-issuer.yaml --namespace $namespace
 
 Write-Output "Now deploying your application"
