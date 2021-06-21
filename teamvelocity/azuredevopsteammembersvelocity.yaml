@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: azuredevopsteammembersvelocity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: azuredevopsteammembersvelocity
+  template:
+    metadata:
+      labels:
+        app: azuredevopsteammembersvelocity
+    spec:
+      containers:
+      - name: azuredevopsteammembersvelocity
+        image: erabliereapi/azuredevopsteammembersvelocity:auth
+        ports:
+        - containerPort: 80
+        env:
+        - name: COOKIEAUTH_USER
+          value: "admin@teamvelocity.com"
+        - name: COOKIEAUTH_PASSWORD
+          value: "admin"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: azuredevopsteammembersvelocity
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+  selector:
+    app: azuredevopsteammembersvelocity
