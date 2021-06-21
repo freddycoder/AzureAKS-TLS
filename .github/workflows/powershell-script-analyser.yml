@@ -1,0 +1,18 @@
+name: AQ
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Powershell script analyser
+      run: Invoke-ScriptAnalyzer .\azure-aks-cluster-deployment.ps1 -Recurse
+      shell: powershell
