@@ -3,7 +3,7 @@ A repo with scripts to deploy a AKS cluster with ingress using TLS with auto cer
 
 ## Run the script
 
-Before running the script, I suggest you check the parameters and changes values those you want.
+Before running the script, I suggest you check the parameters and changes values for those you want.
 
 With a powershell console place inside this repo. Execute 
 
