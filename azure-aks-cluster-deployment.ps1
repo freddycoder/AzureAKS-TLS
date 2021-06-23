@@ -65,9 +65,11 @@ foreach ($cluster in $clustersInfo) {
 }
 
 if ($clusterExist -eq $false) {
-    Write-Output "Creating aksCluster"
+    Write-Output "Creating aksCluster with node size Standard_B2s"
 
-    az aks create --resource-group $resourceGroup --name $aksClusterName --node-count 2 --generate-ssh-keys
+    Write-Host "For more info on node sizes see: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable"
+
+    az aks create --resource-group $resourceGroup --name $aksClusterName --node-count 2 --node-vm-size Standard_B2s --generate-ssh-keys
 } else {
     Write-Output "Skiping AKS Cluster creation. Cluster $aksClusterName already exist"
 }
