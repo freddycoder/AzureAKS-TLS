@@ -1,11 +1,14 @@
 param(
     [string] $resourceGroup = "erabliereapi",
-    [string] $location = "eastus",
+    [string] $location = "canadacentral",
     [string] $aksClusterName = "kerabliere",
     [string] $namespace = "ingress-basic",
     [string] $dnsLabel = "erabliereapidemo1",
     [string] $appScriptPath = ".\demo\application-deployment.ps1"
 )
+
+# Import helpers
+. .\PSFunctions\helpers.ps1
 
 $ErrorActionPreference = "Stop"
 
@@ -42,37 +45,13 @@ Write-Output "Login to azure"
 
 az login
 
-Write-Output "Check if resource group already exists"
-$resourceGroupExists = az group exists --name erabliereapi
+Add-ResourceGroup $resourceGroup $location
 
-if ($resourceGroupExists -eq $false) {
-    Write-Output "Create resource group"
+Write-Output "Creating aksCluster with node size Standard_B2s"
 
-    az group create --name $resourceGroup --location $location
-} else {
-    Write-Output "Skiping resource group creation. Resource group $resourceGroup already exist"
-}
+Write-Host "For more info on node sizes see: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable"
 
-Write-Output "Check if AKS cluster already exist"
-$clustersInfo = az aks list | ConvertFrom-Json
-
-$clusterExist = $false
-
-foreach ($cluster in $clustersInfo) {
-    if ($cluster.name -eq $aksClusterName) {
-        $clusterExist = $true
-    }
-}
-
-if ($clusterExist -eq $false) {
-    Write-Output "Creating aksCluster with node size Standard_B2s"
-
-    Write-Host "For more info on node sizes see: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable"
-
-    az aks create --resource-group $resourceGroup --name $aksClusterName --node-count 2 --node-vm-size Standard_B2s --generate-ssh-keys
-} else {
-    Write-Output "Skiping AKS Cluster creation. Cluster $aksClusterName already exist"
-}
+Add-AKSCluster $resourceGroup $aksClusterName 2 Standard_B2s
 
 Write-Output "Installing aks cli"
 
@@ -209,6 +188,9 @@ if ($userConfirm.Trim().ToLower() -eq "y") {
 
 Write-Output "You are all set ! You can now visit your site !"
 $site1Url = "https://" + $dnsLabel + "." + $location + ".cloudapp.azure.com"
-$site2Url = "https://" + $dnsLabel + "." + $location + ".cloudapp.azure.com/hello-world-two"
 Write-Output "Url1:" $site1Url
-Write-Output "Url2:" $site2Url
+
+if ($appScriptPath -eq ".\demo\application-deployment.ps1") {
+    $site2Url = "https://" + $dnsLabel + "." + $location + ".cloudapp.azure.com/hello-world-two"
+    Write-Output "Url2:" $site2Url
+}
