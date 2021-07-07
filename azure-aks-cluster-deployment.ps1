@@ -1,6 +1,6 @@
 param(
     [string] $resourceGroup = "erabliereapi",
-    [string] $location = "canadacentral",
+    [string] $location = "eastus",
     [string] $aksClusterName = "kerabliere",
     [string] $namespace = "ingress-basic",
     [string] $dnsLabel = "erabliereapidemo1",
