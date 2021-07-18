@@ -1,7 +1,8 @@
 param(
     [string] $namespace,
     [string] $domainPrefix,
-    [string] $location
+    [string] $location,
+    [string] $caName
 )
 
 # Variable global a utiliser lors de la sauvegarde
@@ -20,6 +21,7 @@ $ingressRouteYaml = Get-Content -Path $templatePath -Encoding UTF8 -Raw
 Write-Output "Your domain prefix:" $domainPrefix
 $ingressRouteYaml = $ingressRouteYaml.Replace("<your-domain-prefix>", $domainPrefix);
 $ingressRouteYaml = $ingressRouteYaml.Replace("<your-location>", $location);
+$ingressRouteYaml = $ingressRouteYaml.Replace("<ca-name>", $caName);
 Write-Output "saving the yaml"
 [System.IO.File]::WriteAllText($PWD.Path + "\generated\" + "hello-world-ingress.yaml", $ingressRouteYaml, $Utf8NoBomEncoding)
 Write-Output "apply the yaml"

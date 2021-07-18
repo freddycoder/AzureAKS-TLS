@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fhirapi-deployment
+  labels:
+    app: fhirapi
+spec:
+  selector:
+    matchLabels:
+      app: fhirapi
+  template:
+    metadata:
+      labels:
+        app: fhirapi
+    spec:
+      containers:
+      - name: fhirapi
+        image: mcr.microsoft.com/healthcareapis/r4-fhir-server
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: FHIRServer__Security__Enabled
+          value: "false"
+        - name: SqlServer__ConnectionString
+          value: "Data Source=fhir-db-service;Initial Catalog=FHIR;Persist Security Info=False;User ID=SA;Password=V3ryStr0ngPa55!;MultipleActiveResultSets=False;Connection Timeout=30;"
+        - name: SqlServer__AllowDatabaseCreation
+          value: "true"
+        - name: SqlServer__Initialize
+          value: "true"
+        - name: SqlServer__SchemaOptions__AutomaticUpdatesEnabled
+          value: "true"
+        - name: DataStore
+          value: "SqlServer"
+        - name: ASPNETCORE_FORWARDEDHEADERS_ENABLED
+          value: "true"

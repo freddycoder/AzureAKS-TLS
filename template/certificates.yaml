@@ -13,5 +13,5 @@ spec:
       domains:
       - <your-domain-prefix>.<your-location>.cloudapp.azure.com
   issuerRef:
-    name: letsencrypt-staging
+    name: <ca-name>
     kind: ClusterIssuer

@@ -4,7 +4,9 @@ param(
     [string] $aksClusterName = "kerabliere",
     [string] $namespace = "ingress-basic",
     [string] $dnsLabel = "erabliereapidemo1",
-    [string] $appScriptPath = ".\demo\application-deployment.ps1"
+    [string] $appScriptPath = ".\demo\application-deployment.ps1",
+    [string] $skipCertSleep = "false",
+    [string] $useLetsEncryptProd = "false"
 )
 
 # Import helpers
@@ -143,8 +145,13 @@ helm repo update
 Write-Output "Install the cert-manager Helm chart"
 helm install cert-manager --namespace $namespace --version v1.3.1 --set installCRDs=true --set nodeSelector."beta\.kubernetes\.io/os"=linux jetstack/cert-manager
 
-Write-Output "Wait two minutes before creating the cluster-issuer... this will prevent a request timeout to the cert-manager"
-Start-Sleep 120
+if ("true" -eq $skipCertSleep) {
+
+}
+else {
+    Write-Output "Wait two minutes before creating the cluster-issuer... this will prevent a request timeout to the cert-manager"
+    Start-Sleep 120
+}
 
 Write-Output "Create the cluster issuer"
 
@@ -152,6 +159,16 @@ Write-Output "Create the yaml using email address :" $emailAddress
 $templatePath = $PWD.Path + "\template\" + "cluster-issuer.yaml";
 $templateClusterIssuer = Get-Content -Path $templatePath -Encoding UTF8 -Raw
 $templateClusterIssuer = $templateClusterIssuer.Replace("<your-email-address>", $emailAddress);
+$acmeServerUrl = "https://acme-staging-v02.api.letsencrypt.org/directory";
+if ("true" -eq $useLetsEncryptProd) {
+    $acmeServerUrl = "https://acme-v02.api.letsencrypt.org/directory"
+}
+$templateClusterIssuer = $templateClusterIssuer.Replace("<acme-server-url>", $acmeServerUrl);
+$caName = "letsencrypt-staging";
+if ("true" -eq $useLetsEncryptProd) {
+    $caName = "letsencrypt-prod";
+}
+$templateClusterIssuer = $templateClusterIssuer.Replace("<ca-name>", $caName);
 Write-Output "Save the yaml"
 [System.IO.Directory]::CreateDirectory($PWD.Path + "\generated\")
 [System.IO.File]::WriteAllText($PWD.Path + "\generated\" + "cluster-issuer.yaml", $templateClusterIssuer, $Utf8NoBomEncoding);
@@ -161,7 +178,7 @@ kubectl apply -f generated/cluster-issuer.yaml --namespace $namespace
 
 Write-Output "Now deploying your application"
 
-& $appScriptPath $namespace $dnsLabel $location
+& $appScriptPath $namespace $dnsLabel $location $caName
 
 Write-Output "Create a certificat object"
 
@@ -179,6 +196,7 @@ if ($userConfirm.Trim().ToLower() -eq "y") {
     $ingressRouteYaml = Get-Content -Path $templatePath -Encoding UTF8 -Raw
     $ingressRouteYaml = $ingressRouteYaml.Replace("<your-domain-prefix>", $dnsLabel);
     $ingressRouteYaml = $ingressRouteYaml.Replace("<your-location>", $location);
+    $ingressRouteYaml = $ingressRouteYaml.Replace("<ca-name>", $caName);
     Write-Output "saving the yaml"
     [System.IO.File]::WriteAllText($PWD.Path + "\generated\" + "certificates.yaml", $ingressRouteYaml, $Utf8NoBomEncoding)
     Write-Output "apply the yaml"

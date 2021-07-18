@@ -33,3 +33,19 @@ are going to be verify the not duplicate or create other new resource.
 - Azure Cli
 - Powershell
 - Windows
+
+## Examples
+
+### My HL7
+
+```
+.\azure-aks-cluster-deployment.ps1 -resourceGroup fhir-cluster -location canadaeast -aksClusterName fhir-aks-api-0717 -namespace fhir-space -dnsLabel fhir-aks-api-0717-dns -appScriptPath .\myhl7\application-deployment.ps1 -useLetsEncryptProd true
+```
+
+### Useful related commands
+
+List azure location
+
+```
+az account list-locations
+```
