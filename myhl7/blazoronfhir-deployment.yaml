@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blazoronfhir-deployment
+  labels:
+    app: blazoronfhir
+spec:
+  selector:
+    matchLabels:
+      app: blazoronfhir
+  template:
+    metadata:
+      labels:
+        app: blazoronfhir
+    spec:
+      containers:
+      - name: blazoronfhir
+        image: freddycoder/blazoronfhir:dev
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Development"
+        - name: FHIR_API_URL
+          value: "http://fhir-api-service:8080"
+        - name: Forwarded_headers
+          value: "true"
+        - name: USE_SCHEMA_FROM_PROXY
+          value: "true"
+        - name: UsePathBase
+          value: "/BlazorOnFhir"

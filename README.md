@@ -49,3 +49,9 @@ List azure location
 ```
 az account list-locations
 ```
+
+### Useful related links
+
+Ingress-nginx
+
+https://kubernetes.github.io/ingress-nginx/

@@ -6,7 +6,8 @@ param(
     [string] $dnsLabel = "erabliereapidemo1",
     [string] $appScriptPath = ".\demo\application-deployment.ps1",
     [string] $skipCertSleep = "false",
-    [string] $useLetsEncryptProd = "false"
+    [string] $useLetsEncryptProd = "false",
+    [string] $skipDependenciesInstall = "false"
 )
 
 # Import helpers
@@ -55,9 +56,14 @@ Write-Host "For more info on node sizes see: https://docs.microsoft.com/en-us/az
 
 Add-AKSCluster $resourceGroup $aksClusterName 2 Standard_B2s
 
-Write-Output "Installing aks cli"
+if ("true" -eq $skipDependenciesInstall) {
 
-az aks install-cli
+} else {
+    Write-Output "Installing aks cli"
+
+    az aks install-cli
+}
+
 
 Write-Output "Getting AKS credentials"
 
@@ -98,12 +104,15 @@ if ($ipExist -eq $false) {
 kubectl create namespace $namespace
 
 try {
-    Write-Output "Install kubernetes-helm"
-    choco install kubernetes-helm
+    if ("true" -eq $skipDependenciesInstall) {
+
+    } else {
+        Write-Output "Install kubernetes-helm"
+        choco install kubernetes-helm
+    }
 } catch {
     Write-Output "Choco install kebernetes-helm failed... you may need to install helm manually"
 }
-
 
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 

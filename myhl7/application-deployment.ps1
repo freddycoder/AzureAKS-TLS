@@ -33,6 +33,10 @@ kubectl apply -f .\myhl7\fhir-api-deployment.yaml --namespace=$namespace
 
 kubectl apply -f .\myhl7\fhir-api-service.yaml --namespace=$namespace
 
+kubectl apply -f .\myhl7\blazoronfhir-deployment.yaml --namespace=$namespace
+
+kubectl apply -f .\myhl7\blazoronfhir-service.yaml --namespace=$namespace
+
 Write-Output "**************************************"
 Write-Output "Deploy Fhir Api Ingress"
 Write-Output "**************************************"
