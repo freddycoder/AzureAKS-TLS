@@ -9,6 +9,21 @@ Write-Output "**************************************"
 Write-Output "Deploy Fhir Api"
 Write-Output "**************************************"
 
+Write-Output ""
+Write-Output "AzureAD setup..."
+
+$app = Add-AzureADApplicationHelper BlazorOnFhir-Prod "https://$domainPrefix.$location.cloudapp.azure.com/signin-oidc" "https://$domainPrefix.$location.cloudapp.azure.com/signout-oidc"
+
+Write-Output "ClientId:" $app.appId
+
+$tenant = Get-AzTenant
+
+Write-Output "TenantId:" $tenant.Id
+
+Write-Output ""
+Write-Output ""
+Write-Output "Kubernetes setup..."
+
 $secrets = kubectl get secret -n $namespace
 
 $secretMssqlExist = $false;
@@ -33,7 +48,12 @@ kubectl apply -f .\myhl7\fhir-api-deployment.yaml --namespace=$namespace
 
 kubectl apply -f .\myhl7\fhir-api-service.yaml --namespace=$namespace
 
-kubectl apply -f .\myhl7\blazoronfhir-deployment.yaml --namespace=$namespace
+$blazorOnFhirYamlPath = $PWD.Path + "\myhl7\blazoronfhir-deployment.yaml"
+$blazorOnYaml = Get-Content -Path $blazorOnFhirYamlPath -Encoding UTF8 -Raw
+$blazorOnYaml = $blazorOnYaml.Replace("<client-id>", $app.appId)
+$blazorOnYaml = $blazorOnYaml.Replace("<tenant-id>", $tenant.Id)
+Write-Output $blazorOnYaml
+$blazorOnYaml | kubectl apply --namespace=$namespace -f -
 
 kubectl apply -f .\myhl7\blazoronfhir-service.yaml --namespace=$namespace
 

@@ -28,3 +28,7 @@ spec:
           value: "true"
         - name: USE_SCHEMA_FROM_PROXY
           value: "true"
+        - name: AzureAD__ClientId
+          value: "<client-id>"
+        - name: AzureAD__TenantId
+          value: "<tenant-id>"
