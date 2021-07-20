@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: blazoronfhir
-        image: freddycoder/blazoronfhir:dev
+        image: freddycoder/blazoronfhir:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
