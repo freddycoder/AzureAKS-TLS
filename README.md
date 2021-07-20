@@ -34,12 +34,24 @@ are going to be verify the not duplicate or create other new resource.
 - Powershell
 - Windows
 
+## Get Help
+
+```
+Get-Help .\azure-aks-cluster-deployment.ps1
+```
+
 ## Examples
 
 ### My HL7
 
 ```
 .\azure-aks-cluster-deployment.ps1 -resourceGroup fhir-cluster -location canadaeast -aksClusterName fhir-aks-api-0717 -namespace fhir-space -dnsLabel fhir-aks-api-0717-dns -appScriptPath .\myhl7\application-deployment.ps1 -useLetsEncryptProd true
+```
+
+For an update, you can add few parameter to skip optionnal step when updating. Do not use these parameter at the initial creation of a cluster.
+>  -skipCertSleep true -skipDependenciesInstall true is added at the end
+```
+.\azure-aks-cluster-deployment.ps1 -resourceGroup fhir-cluster -location canadaeast -aksClusterName fhir-aks-api-0717 -namespace fhir-space -dnsLabel fhir-aks-api-0717-dns -appScriptPath .\myhl7\application-deployment.ps1 -useLetsEncryptProd true -skipCertSleep true -skipDependenciesInstall true
 ```
 
 ### Useful related commands

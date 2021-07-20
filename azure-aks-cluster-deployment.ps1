@@ -7,7 +7,8 @@ param(
     [string] $appScriptPath = ".\demo\application-deployment.ps1",
     [string] $skipCertSleep = "false",
     [string] $useLetsEncryptProd = "false",
-    [string] $skipDependenciesInstall = "false"
+    [string] $skipDependenciesInstall = "false",
+    [string] $skipLogin = "false"
 )
 
 # Import helpers
@@ -46,7 +47,11 @@ $emailAddress = Read-Host
 
 Write-Output "Login to azure"
 
-az login
+if ("true" -eq $skipLogin) {
+
+} else {
+    az login
+}
 
 Add-ResourceGroup $resourceGroup $location
 
