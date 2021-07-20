@@ -28,5 +28,3 @@ spec:
           value: "true"
         - name: USE_SCHEMA_FROM_PROXY
           value: "true"
-        - name: UsePathBase
-          value: "/BlazorOnFhir"
