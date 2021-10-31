@@ -29,7 +29,7 @@ Write-Output ""
 
 az --version
 
-Write-Output "Make sure you run have a version of 'az' greater than 2.0.53"
+Write-Output "Make sure you run have a version of 'az' greater or equal than 2.29.2"
 
 Write-Output "Do you want to procced ? (y/n)"
 
