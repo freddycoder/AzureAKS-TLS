@@ -1,14 +1,15 @@
 param(
-    [string] $resourceGroup = "erabliereapi",
+    [string] $resourceGroup = "testcluster20211228",
     [string] $location = "eastus",
-    [string] $aksClusterName = "kerabliere",
+    [string] $aksClusterName = "testclusteraks20211228",
     [string] $namespace = "ingress-basic",
-    [string] $dnsLabel = "erabliereapidemo1",
+    [string] $dnsLabel = "testclusteraks20211228",
     [string] $appScriptPath = ".\demo\application-deployment.ps1",
     [string] $skipCertSleep = "false",
     [string] $useLetsEncryptProd = "false",
     [string] $skipDependenciesInstall = "false",
-    [string] $skipLogin = "false"
+    [string] $skipLogin = "false",
+    [string] $customDomain = ""
 )
 
 # Import helpers
@@ -132,7 +133,11 @@ foreach ($deployment in $deployments) {
 }
 
 if ($ingressControllerExist -eq $false) {
-    helm install nginx-ingress ingress-nginx/ingress-nginx --namespace $namespace --set controller.replicaCount=2 --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux  --set controller.service.loadBalancerIP="$staticIP" --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="$dnsLabel"
+    if ("" -eq $customDomain) {
+        helm install nginx-ingress ingress-nginx/ingress-nginx --namespace $namespace --set controller.replicaCount=2 --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux  --set controller.service.loadBalancerIP="$staticIP" --set controller.service.externalTrafficPolicy=Local --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-dns-label-name"="$dnsLabel"
+    } else {
+        helm install nginx-ingress ingress-nginx/ingress-nginx --namespace $namespace --set controller.replicaCount=2 --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux  --set controller.service.loadBalancerIP="$staticIP" --set controller.service.externalTrafficPolicy=Local
+    }
 } else {
     Write-Output "Skipping Ingress Controller Deployment. Deployment nginx-ingress-ingress-nginx-controller already exist"
 }
@@ -192,7 +197,7 @@ kubectl apply -f generated/cluster-issuer.yaml --namespace $namespace
 
 Write-Output "Now deploying your application"
 
-& $appScriptPath $namespace $dnsLabel $location $caName
+& $appScriptPath $namespace $dnsLabel $location $caName $customDomain
 
 Write-Output "Create a certificat object"
 
@@ -204,12 +209,16 @@ Write-Output "Do you need to create additionnal certificate ? (y/n)"
 
 $userConfirm = Read-Host
 
+$domain = $customDomain
+if ("" -eq $customDomain) {
+    $domain = "$dnsLabel.$location.cloudapp.azure.com"
+}
+
 if ($userConfirm.Trim().ToLower() -eq "y") {
     Write-Output "Create the yaml"
     $templatePath = $PWD.Path + "\template\" + "certificates.yaml";
     $ingressRouteYaml = Get-Content -Path $templatePath -Encoding UTF8 -Raw
-    $ingressRouteYaml = $ingressRouteYaml.Replace("<your-domain-prefix>", $dnsLabel);
-    $ingressRouteYaml = $ingressRouteYaml.Replace("<your-location>", $location);
+    $ingressRouteYaml = $ingressRouteYaml.Replace("<domain>", $domain);
     $ingressRouteYaml = $ingressRouteYaml.Replace("<ca-name>", $caName);
     Write-Output "saving the yaml"
     [System.IO.File]::WriteAllText($PWD.Path + "\generated\" + "certificates.yaml", $ingressRouteYaml, $Utf8NoBomEncoding)
@@ -219,7 +228,7 @@ if ($userConfirm.Trim().ToLower() -eq "y") {
 }
 
 Write-Output "You are all set ! You can now visit your site !"
-$site1Url = "https://" + $dnsLabel + "." + $location + ".cloudapp.azure.com"
+$site1Url = "https://" + $domain
 Write-Output "Url1:" $site1Url
 
 if ($appScriptPath -eq ".\demo\application-deployment.ps1") {
