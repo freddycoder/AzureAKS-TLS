@@ -10,16 +10,16 @@ metadata:
 spec:
   tls:
   - hosts:
-    - <your-domain-prefix>.<your-location>.cloudapp.azure.com
+    - <domain>
     secretName: tls-secret
   rules:
-  - host: <your-domain-prefix>.<your-location>.cloudapp.azure.com
+  - host: <domain>
     http:
       paths:
       - path: /(.*)
         pathType: Prefix
         backend:
           service:
-            name: erabliereapi
+            name: erabliere-api-service
             port:
               number: 80

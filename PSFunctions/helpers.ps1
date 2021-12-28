@@ -31,8 +31,8 @@ function Add-AKSCluster($resourceGroup, $aksClusterName, $nodeCount, $nodeVMSize
     }
 }
 
-function Add-AzureADApplicationHelper($name, $replyUrl, $logoutUrl) {
-    Write-Host "Add-AzureADApplication"
+function Add-AzureADWebApplication($name, $replyUrl, $logoutUrl) {
+    Write-Host "Add-AzureADWebApplication"
     Write-Host "1. Fetch the existing apps"
     
     $apps = az ad app list | ConvertFrom-Json
@@ -70,3 +70,94 @@ function Add-AzureADApplicationHelper($name, $replyUrl, $logoutUrl) {
 
     return $app
 }
+
+function Add-AzureADApiApplication($name, $appUrl) {
+    Write-Host "Add-AzureADApiApplication"
+    Write-Host "1. Fetch the existing apps"
+    
+    $apps = az ad app list | ConvertFrom-Json
+
+    $app = "";
+
+    Write-Host "2. Loop througth the existing apps to find $name"
+    foreach ($existingApp in $apps) {
+        if ($existingApp.displayName -eq $name) {
+            Write-Host "The app already exist. The app will be updated."
+
+            $app = $existingApp
+        }
+    }
+
+    if ($app -eq "") {
+        Write-Host "App need to be create."
+
+        $app = az ad app create --display-name $name
+
+        Write-Host "App created"
+
+        Write-Host $app
+
+        $app = $app | ConvertFrom-Json
+    }
+
+    # Set identifier URI and define scopes
+    $requeredResource = 
+        @{
+            resourceAppId = $appUrl
+            resourceAccess = @{
+                id = "a42657d6-7f20-40e3-b6f0-cee03008a62a"
+                type = "Scope"
+            }
+        }
+
+    Write-Host $requeredResource
+
+    az ad app update --id $app.appId --required-resource-accesses $requeredResource
+
+    $roleMnifest = 
+        @{
+            allowedMemberTypes = @(
+				"User",
+				"Application"
+            )
+			description = "fhir oss admin"
+			displayName = "globalAdmin"
+			isEnabled = $true
+			value = "globalAdmin"
+        }
+
+    Write-Output $roleMnifest
+
+    az ad app update --id $app.appId --app-roles $roleMnifest
+
+    return $app
+}
+
+# Ask user for a variable and return it
+function Get-UserSecureVariable($message) {
+    Write-Output $message
+    $secureVariable = Read-Host -AsSecureString
+    return $secureVariable
+}
+
+# Ask user for a variable and return it
+function Get-UserVariable($message) {
+    Write-Output $message
+    $variable = Read-Host
+    return $variable
+}
+
+# Aks user for a variable and replace it in a string then return the string
+function Replace-UserVariable([string] $message, [string] $variableName, [string] $source) {
+    $variable = Get-UserVariable $message
+    $string = $source.Replace($variableName, $variable)
+    return $string
+}
+
+# Aks user for a secure variable and replace it in a string then return the string
+function Replace-UserSecureVariable([string] $message, [string] $variableName, [string] $source) {
+    $variable = Get-UserSecureVariable $message
+    $string = $source.Replace($variableName, $variable)
+    return $string
+}
+

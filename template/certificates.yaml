@@ -5,13 +5,13 @@ metadata:
 spec:
   secretName: tls-secret
   dnsNames:
-  - <your-domain-prefix>.<your-location>.cloudapp.azure.com
+  - <domain>
   acme:
     config:
     - http01:
         ingressClass: nginx
       domains:
-      - <your-domain-prefix>.<your-location>.cloudapp.azure.com
+      - <domain>
   issuerRef:
     name: <ca-name>
     kind: ClusterIssuer
