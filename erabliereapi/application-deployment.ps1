@@ -7,7 +7,7 @@ param(
 )
 
 # import helper functions
-. .\..\PSFunctions\helpers.ps1
+. .\PSFunctions\helpers.ps1
 
 Write-Output "**************************************"
 Write-Output "Deploy Erabliere API"
@@ -44,10 +44,10 @@ Write-Output "Create file generated/erabliereapi-email-secret.yaml"
 $emailConfigContentPath = $PWD.Path + "\erabliereapi\secrets\emailConfig.json"
 $emailConfigContent = Get-Content -Path $emailConfigContentPath -Encoding UTF8 -Raw
 
-$emailConfigContent = Replace-UserVariable("Enter the email sender: ", "<emailConfig.sender>", $emailConfigContent)
-$emailConfigContent = Replace-UserVariable("Enter the email: ", "<emailConfig.email>", $emailConfigContent)
-$emailConfigContent = Replace-UserSecureVariable("Enter the email password: ", "<emailConfig.password>" , $emailConfigContent)
-$emailConfigContent = Replace-UserVariable("Enter the smtp server: ", "<emailConfig.smtpServer>", $emailConfigContent)
+$emailConfigContent = Replace-UserVariable "Enter the email sender: " "<emailConfig.sender>" $emailConfigContent
+$emailConfigContent = Replace-UserVariable "Enter the email: " "<emailConfig.email>" $emailConfigContent
+$emailConfigContent = Replace-UserSecureVariable "Enter the email password: " "<emailConfig.password>" $emailConfigContent
+$emailConfigContent = Replace-UserVariable "Enter the smtp server: " "<emailConfig.smtpServer>" $emailConfigContent
 
 $emailConfigBase64 = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($emailConfigContent))
 
@@ -70,10 +70,10 @@ $oidcContentPath = $PWD.Path + "\erabliereapi\secrets\erabliere-api-angular-conf
 $oidcConfig = Get-Content -Path $oidcContentPath -Encoding UTF8 -Raw
 
 $oidcConfig = $oidcConfig.Replace("<oidc.apiUrl>", "https://$domain")
-$oidcConfig = Replace-UserVariable("Enter the client id use for the ui: ", "<oidc.clientId>", $oidcConfig)
+$oidcConfig = Replace-UserVariable "Enter the client id use for the ui: "  "<oidc.clientId>"  $oidcConfig
 $oidcConfig = $oidcConfig.Replace("<oidc.tenantId>", $tenantId)
-$oidcConfig = Replace-UserVariable("Enter the scopes use for the ui: ", "<oidc.scopes>", $oidcConfig)
-$oidcConfig = Replace-UserVariable("Enter the app root use for the ui: ", "<oidc.appRoot>", $oidcConfig)
+$oidcConfig = Replace-UserVariable "Enter the scopes use for the ui: " "<oidc.scopes>" $oidcConfig
+$oidcConfig = Replace-UserVariable "Enter the app root use for the ui: " "<oidc.appRoot>" $oidcConfig
 
 Write-Output "saving the yaml"
 [System.IO.File]::WriteAllText($PWD.Path + "\generated\erabliere-api-angular-configmap.yaml", $oidcConfig, $Utf8NoBomEncoding)
