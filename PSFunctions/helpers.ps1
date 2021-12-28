@@ -135,28 +135,30 @@ function Add-AzureADApiApplication($name, $appUrl) {
 
 # Ask user for a variable and return it
 function Get-UserSecureVariable($message) {
-    Write-Output $message
+    Write-Host $message
     $secureVariable = Read-Host -AsSecureString
     return $secureVariable
 }
 
 # Ask user for a variable and return it
 function Get-UserVariable($message) {
-    Write-Output $message
+    Write-Host $message
     $variable = Read-Host
     return $variable
 }
 
 # Aks user for a variable and replace it in a string then return the string
 function Replace-UserVariable([string] $message, [string] $variableName, [string] $source) {
-    $variable = Get-UserVariable $message
+    Write-Host $message
+    $variable = Read-Host
     $string = $source.Replace($variableName, $variable)
     return $string
 }
 
 # Aks user for a secure variable and replace it in a string then return the string
 function Replace-UserSecureVariable([string] $message, [string] $variableName, [string] $source) {
-    $variable = Get-UserSecureVariable $message
+    Write-Host $message
+    $variable = Read-Host -AsSecureString
     $string = $source.Replace($variableName, $variable)
     return $string
 }
