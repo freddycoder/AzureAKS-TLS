@@ -12,10 +12,10 @@ param(
     [string] $customDomain = ""
 )
 
+$ErrorActionPreference = "Stop"
+
 # Import helpers
 . .\PSFunctions\helpers.ps1
-
-$ErrorActionPreference = "Stop"
 
 # Variable global a utiliser lors de la sauvegarde
 $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
