@@ -8,14 +8,16 @@ param(
 Write-Output "**************************************"
 Write-Output "Deploy Fhir Api"
 Write-Output "**************************************"
+
 Write-Output ""
 Write-Output "AzureAD setup..."
 
-# $api = Add-AzureADApiApplication FhirApi-Prod "https://$domainPrefix.$location.cloudapp.azure.com/api"
+$app = Add-AzureADApplicationHelper BlazorOnFhir-Prod "https://$domainPrefix.$location.cloudapp.azure.com/signin-oidc" "https://$domainPrefix.$location.cloudapp.azure.com/signout-oidc"
 
-$app = Add-AzureADWebApplication BlazorOnFhir-Prod "https://$domainPrefix.$location.cloudapp.azure.com/signin-oidc" "https://$domainPrefix.$location.cloudapp.azure.com/signout-oidc"
 Write-Output "ClientId:" $app.appId
+
 $tenant = Get-AzTenant
+
 Write-Output "TenantId:" $tenant.Id
 
 Write-Output ""

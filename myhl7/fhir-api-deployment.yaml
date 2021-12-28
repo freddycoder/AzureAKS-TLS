@@ -20,13 +20,9 @@ spec:
         - containerPort: 8080
         env:
         - name: ASPNETCORE_ENVIRONMENT
-          value: "Development"
+          value: "Production"
         - name: FHIRServer__Security__Enabled
-          value: "true"
-        - name: FHIRServer__Security__Authentication__Audience
-          value: "api://182d866e-5f6a-465d-8c53-17cb176c6242"
-        - name: FHIRServer__Security__Authentication__Authority
-          value: "https://login.microsoftonline.com/b9bf4857-4ec2-42d7-8151-369ba12c651a"
+          value: "false"
         - name: SqlServer__ConnectionString
           value: "Data Source=fhir-db-service;Initial Catalog=FHIR;Persist Security Info=False;User ID=SA;Password=V3ryStr0ngPa55!;MultipleActiveResultSets=False;Connection Timeout=30;"
         - name: SqlServer__AllowDatabaseCreation
