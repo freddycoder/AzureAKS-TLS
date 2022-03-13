@@ -147,7 +147,7 @@ function Get-UserVariable($message) {
     return $variable
 }
 
-# Aks user for a variable and replace it in a string then return the string
+# Ask user for a variable and replace it in a string then return the string
 function Replace-UserVariable([string] $message, [string] $variableName, [string] $source) {
     Write-Host $message
     $variable = Read-Host
@@ -155,7 +155,7 @@ function Replace-UserVariable([string] $message, [string] $variableName, [string
     return $string
 }
 
-# Aks user for a secure variable and replace it in a string then return the string
+# Ask user for a secure variable and replace it in a string then return the string
 function Replace-UserSecureVariable([string] $message, [string] $variableName, [string] $source) {
     Write-Host $message
     $variable = Read-Host -AsSecureString

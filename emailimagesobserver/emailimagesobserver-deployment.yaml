@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emailimagesobserver-deployment
+  labels:
+    app: emailimagesobserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emailimagesobserver
+  template:
+    metadata:
+      labels:
+        app: emailimagesobserver
+    spec:
+      volumes:
+      - name: email-config-secret
+        secret:
+          secretName: erabliereapi-email-config
+      containers:
+      - name: emailimagesobserver
+        image: erabliereapi/emailimagesobserver:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: 20
+          periodSeconds: 60
+        volumeMounts:
+        - name: email-config-secret
+          mountPath: /app/mountsecret
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: Logging__LogLevel__Default
+          value: "Warning"
+        - name: Logging__LogLevel__Microsoft
+          value: "Warning"
+        - name: Logging__LogLevel__Microsoft.Hosting.Lifetime
+          value: "Warning"
+        - name: Forwarded_headers
+          value: "true"
+        - name: USE_SCHEMA_FROM_PROXY
+          value: "true"
+        - name: Forwarded_headers.Debug_headers
+          value: "false"
+        - name: DEBUG_HEADERS
+          value: "false"
+        - name: AzureAD__ClientId
+          value: "<azuread-clientid>"
+        - name: AzureAD__TenantId
+          value: "<azuread-tenantid>"
+        - name: AzureAD__CallbackPath
+          value: "/emailimagesobserver/signin-oidc"
+        - name: AzureAD__SignedOutCallbackPath
+          value: "/emailimagesobserver/signout-oidc"
+        - name: ConnectionStrings__Sql
+          value: "<sql-connectionstrings>"
+        - name: Database__Provider
+          value: "Sql"
+        - name: LoginInfo__AzureVisionEndpoint
+          value: "<azure-vision-endpoint>"
+        - name: LoginInfo__AzureVisionSubscriptionKey
+          value: "<azure-vision-substriptionkey>"
+        - name: LoginInfo__EmailLogin
+          value: "<email-login>"
+        - name: LoginInfo__EmailPassword
+          value: "<email-password>"
+        - name: LoginInfo__ImapServer
+          value: "<email-imapserver>"
+        - name: LoginInfo__ImapPort
+          value: "<email-ImapPort>"
