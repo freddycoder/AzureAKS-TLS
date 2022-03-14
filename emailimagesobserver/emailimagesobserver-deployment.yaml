@@ -49,6 +49,10 @@ spec:
           value: "false"
         - name: DEBUG_HEADERS
           value: "false"
+        - name: StartsWithSegments
+          value: "/emailimagesobserver"
+        - name: StartsWithSegments.Exclusions
+          value: "/emailimagesobserver/signin-oidc,/emailimagesobserver/signout-oidc"
         - name: AzureAD__ClientId
           value: "<azuread-clientid>"
         - name: AzureAD__TenantId
