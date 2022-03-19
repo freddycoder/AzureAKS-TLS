@@ -29,6 +29,11 @@ spec:
       - name: erabliereapi
         image: erabliereapi/erabliereapi:v2
         imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "300Mi"
+          requests:
+            memory: "100Mi"
         command: ["/app/k8s-startup/k8s-startup.sh"]
         ports:
         - containerPort: 80
