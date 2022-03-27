@@ -31,9 +31,9 @@ spec:
         imagePullPolicy: Always
         resources:
           limits:
-            memory: "300Mi"
+            memory: "150Mi"
           requests:
-            memory: "100Mi"
+            memory: "75Mi"
         command: ["/app/k8s-startup/k8s-startup.sh"]
         ports:
         - containerPort: 80
