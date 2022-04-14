@@ -27,7 +27,7 @@ spec:
           defaultMode: 0744
       containers:
       - name: erabliereapi
-        image: erabliereapi/erabliereapi:v2
+        image: erabliereapi/erabliereapi:latest
         imagePullPolicy: Always
         resources:
           limits:
