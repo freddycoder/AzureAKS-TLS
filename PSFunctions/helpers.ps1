@@ -24,7 +24,14 @@ function Add-AKSCluster($resourceGroup, $aksClusterName, $nodeCount, $nodeVMSize
     }
 
     if ($clusterExist -eq $false) {
-        az aks create --resource-group $resourceGroup --name $aksClusterName --node-count $nodeCount --node-vm-size $nodeVMSize --generate-ssh-keys
+        az aks create `
+            --resource-group $resourceGroup `
+            --name $aksClusterName `
+            --node-count $nodeCount `
+            --node-vm-size $nodeVMSize `
+            --load-balancer-sku basic `
+            --node-osdisk-size 32 `
+            --generate-ssh-keys
     } 
     else {
         Write-Output "Skiping AKS Cluster creation. Cluster $aksClusterName already exist"
@@ -158,7 +165,7 @@ function Replace-UserVariable([string] $message, [string] $variableName, [string
 # Ask user for a secure variable and replace it in a string then return the string
 function Replace-UserSecureVariable([string] $message, [string] $variableName, [string] $source) {
     Write-Host $message
-    $variable = Read-Host -AsSecureString
+    $variable = Read-Host -MaskInput
     $string = $source.Replace($variableName, $variable)
     return $string
 }

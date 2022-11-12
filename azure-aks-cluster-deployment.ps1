@@ -60,7 +60,7 @@ Write-Output "Creating aksCluster with node size Standard_B2s"
 
 Write-Host "For more info on node sizes see: https://docs.microsoft.com/en-us/azure/virtual-machines/sizes-b-series-burstable"
 
-Add-AKSCluster $resourceGroup $aksClusterName 2 Standard_B2s
+Add-AKSCluster $resourceGroup $aksClusterName 1 Standard_B2s
 
 if ("true" -eq $skipDependenciesInstall) {
 
