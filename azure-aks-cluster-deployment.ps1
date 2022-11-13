@@ -162,7 +162,12 @@ Write-Output "Update your local Helm chart repository cache"
 helm repo update
 
 Write-Output "Install the cert-manager Helm chart"
-helm install cert-manager --namespace $namespace --version v1.3.1 --set installCRDs=true --set nodeSelector."beta\.kubernetes\.io/os"=linux jetstack/cert-manager
+
+helm install cert-manager jetstack/cert-manager `
+  --namespace $namespace `
+  --version "v1.8.0" `
+  --set installCRDs=true `
+  --set nodeSelector."kubernetes\.io/os"=linux `
 
 if ("true" -eq $skipCertSleep) {
 
