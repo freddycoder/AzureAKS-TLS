@@ -110,4 +110,7 @@ spec:
           value: "<tenant-id>"
         - name: EMAIL_CONFIG_PATH
           value: "/app/secret/emailConfig.json"
-        
+        - name: USE_DISTRIBUTED_CACHE
+          value: "true"
+        - name: REDIS_CONNEXION_STRING
+          value: redis-service

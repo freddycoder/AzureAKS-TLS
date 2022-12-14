@@ -20,6 +20,9 @@ if ("" -eq $customDomain) {
     $domain = "$domainPrefix.$location.cloudapp.azure.com"
 }
 
+Write-Output "Depoy redis"
+kubectl apply -f erabliereapi-v3/redis-deployment.yaml -n $namespace
+
 $tenantId = Get-UserVariable("Enter the tenant id use for the api azure ad: ")
 $clientId = Get-UserVariable("Enter the client id use for the api: ")
 
